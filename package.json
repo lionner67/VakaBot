@@ -1,0 +1,21 @@
+{
+  "name": "vakabot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "VakaBot.js",
+  "author": "Niroshy",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/opus": "^0.8.0",
+    "discord.js": "^12.5.3",
+    "ffmpeg-static": "^5.0.2",
+    "fs": "^0.0.1-security",
+    "node-twitch": "^0.4.5",
+    "opusscript": "^0.0.8",
+    "ytdl-core": "^4.11.0",
+    "ytsr": "^3.8.0"
+  },
+  "scripts": {
+    "start": "node VakaBot.js"
+  }
+}

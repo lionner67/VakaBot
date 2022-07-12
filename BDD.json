@@ -1,0 +1,48 @@
+{
+    "giveawayID": "996417252943462410",
+    "giveawayMember": [
+        "284374660764925952"
+    ],
+    "commandsDescriptions": {
+        "twitch": "Permet d'avoir la chaîne twitch de Vakarian et de savoir si il stream",
+        "youtube": "Permet d'avoir la chaîne youtube de Vakarian",
+        "instagram": "Permet d'avoir l'instagram de Vakarian",
+        "boutique": "Permet d'avoir le site de la boutique officielle de Vakarian",
+        "giveaway": "Permet de lancer un giveaway\n{prefix}giveaway {temps (en minutes)} {nombre de gagnants} {descritption}",
+        "play": "Permet de jouer une musique\n{prefix}play {titre & artiste || lien youtube}",
+        "stop": "Permet de déconnecter le bot du channel vocal",
+        "skip": "Permet de passer à la musique suivante",
+        "pause": "Permet de mettre en pause une musique",
+        "resume": "Permet de reprendre une musique en pause",
+        "loop": "Permet de répéter une musique ou toutes les musiques dans la file d'attente",
+        "queue": "Permet d'afficher la file d'attente des musiques"
+    },
+    "stream": {
+        "data": [
+            {
+                "id": "45743963036",
+                "user_id": "276668404",
+                "user_login": "tdw_vakarian",
+                "user_name": "TDW_Vakarian",
+                "game_id": "33214",
+                "game_name": "Fortnite",
+                "type": "live",
+                "title": "[GameViewers] On joue ensemble les amis! road to 1,5K follows ❤️ !discord !insta !boutique !epic !jouer",
+                "viewer_count": 44,
+                "started_at": "2022-07-12T11:00:51Z",
+                "language": "fr",
+                "thumbnail_url": "https://static-cdn.jtvnw.net/previews-ttv/live_user_tdw_vakarian-{width}x{height}.jpg",
+                "tag_ids": [
+                    "fd8f5e68-42d3-4544-a273-5fc92dabc568",
+                    "ff56eeeb-99ed-4a60-93fc-0b3f05d8661e",
+                    "54b544af-2d0e-4d17-a653-78e3f6fc1fc8",
+                    "cc8d5abb-39c9-4942-a1ee-e1558512119e",
+                    "ac763b17-7bea-4632-9eb4-d106689ff409",
+                    "6f655045-9989-4ef7-8f85-1edcec42d648"
+                ],
+                "is_mature": false
+            }
+        ],
+        "pagination": {}
+    }
+}
