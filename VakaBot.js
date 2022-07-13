@@ -5,6 +5,11 @@ const ytdl = require(`ytdl-core`);
 const ytsr = require(`ytsr`);
 const queue = new Map();
 const twitchAPI = require(`node-twitch`).default;
+const ytNotifier = require(`youtube-notification-module`);
+const notifier = new ytNotifier({
+    channels: [`UCYP2wRPOrRv6h2zX7OiCIbA`],
+    checkInterval: 30,
+});
 const BDD = require(`./BDD.json`);
 const prefix = `!`;
 const twitch = new twitchAPI({
@@ -22,6 +27,26 @@ client.on(`ready`, () =>
     client.user.setActivity(`Vakarian!`, {type: `WATCHING`, url: `https://www.twitch.tv/tdw_vakarian`});
 });
 
+
+notifier.on(`video`, video =>
+{
+    let channelName = video.channelName;
+    let title = video.title;
+    let url = video.url;
+    let embed = new discord.MessageEmbed()
+    .setTitle(`**YOUTUBE NOTIF**`)
+    .setAuthor(channelName)
+    .setColor(`#FFE000`)
+    .setThumbnail(`https://cdn.discordapp.com/attachments/830567944948809748/958676989307387924/3.png`)
+    .setDescription(`Vakarian a publié une nouvelle vidéo!`)
+    .addField(`Titre:`, title)
+    .addField(`Lien:`, url)
+    .setFooter(`Développé par Niroshy#0426 et Vakarian#3947`)
+    .setTimestamp();
+
+    client.channels.cache.get(`958103235825123431`).send(`@everyone`);
+    client.channels.cache.get(`958103235825123431`).send(embed);
+});
 
 
 client.on(`message`, async message =>
@@ -562,7 +587,7 @@ function loop(args, serverQueue, message)
             }
             else
             {
-                message.channel.send(`La répétitiotn de la musique a été désactivée!`);
+                message.channel.send(`La répétition de la musique a été désactivée!`);
             }
 
             break;

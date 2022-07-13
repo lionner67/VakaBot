@@ -12,6 +12,7 @@
     "fs": "^0.0.1-security",
     "node-twitch": "^0.4.5",
     "opusscript": "^0.0.8",
+    "youtube-notification-module": "^1.1.0",
     "ytdl-core": "^4.11.0",
     "ytsr": "^3.8.0"
   },
