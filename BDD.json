@@ -15,7 +15,8 @@
         "pause": "Permet de mettre en pause une musique",
         "resume": "Permet de reprendre une musique en pause",
         "loop": "Permet de répéter une musique ou toutes les musiques dans la file d'attente",
-        "queue": "Permet d'afficher la file d'attente des musiques"
+        "queue": "Permet d'afficher la file d'attente des musiques",
+        "lyrics": "Permet d'avoir les paroles d'une musique"
     },
     "stream": {
         "data": [],

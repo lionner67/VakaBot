@@ -3,6 +3,7 @@ const client = new discord.Client();
 const fs = require(`fs`);
 const ytdl = require(`ytdl-core`);
 const ytsr = require(`ytsr`);
+const lyricsFinder = require(`lyrics-finder`);
 const queue = new Map();
 const twitchAPI = require(`node-twitch`).default;
 const ytNotifier = require(`youtube-notification-module`);
@@ -97,6 +98,7 @@ client.on(`message`, async message =>
         .addField(`${prefix}resume`, BDD[`commandsDescriptions`][`resume`], true)
         .addField(`${prefix}loop`, BDD[`commandsDescriptions`][`loop`], true)
         .addField(`${prefix}queue`, BDD[`commandsDescriptions`][`queue`], true)
+        .addField(`${prefix}lyrics`, BDD[`commandsDescriptions`][`lyrics`], true)
         .setFooter(`Développé par Niroshy#0426 et Vakarian#3947`)
         .setTimestamp();
 
@@ -296,6 +298,103 @@ client.on(`message`, async message =>
     if(message.content.startsWith(`${prefix}queue`))
     {
         musicQueue(serverQueue, message);
+    }
+
+    if(message.content.startsWith(`${prefix}lyrics`))
+    {
+        let args = message.content.split(` `);
+        let artiste = ``;
+        let songName = ``;
+        let pages = [];
+        let currentPage = 0;
+        let messageFilter = m => m.author.id == message.author.id;
+        let reactionFilter = (reaction, user) => [`⬅️`, `➡️`].includes(reaction.emoji.name) && (message.author.id == user.id);
+
+        if((serverQueue) && (serverQueue.connection) && (args.length < 2))
+        {
+            artiste = serverQueue.songs[0].author;
+            songName = serverQueue.songs[0].title;
+
+            await lyrics(artiste, songName, message, pages);
+
+            let lyricEmbed = await message.channel.send(`Pages: ${currentPage + 1} / ${pages.length}`, pages[currentPage]);
+        
+            await lyricEmbed.react(`⬅️`);
+            await lyricEmbed.react(`➡️`);
+
+            let collector = lyricEmbed.createReactionCollector(reactionFilter);
+
+            collector.on(`collect`, (reaction, user) => 
+            {
+                if(reaction.emoji.name == `➡️`)
+                {
+                    if(currentPage < pages.length - 1)
+                    {
+                        currentPage += 1;
+                        lyricEmbed.edit(`Pages: ${currentPage + 1} / ${pages.length}`, pages[currentPage]);
+                        message.reactions.resolve(reaction).users.remove(user);
+                    }
+                }
+                else if(reaction.emoji.name == `⬅️`)
+                {
+                    if(currentPage !== 0)
+                    {
+                        currentPage -= 1;
+                        lyricEmbed.edit(`Pages: ${currentPage + 1} / ${pages.length}`, pages[currentPage]);
+                        message.reactions.resolve(reaction).remove(user);
+                    }
+                }
+            });
+        }
+        else
+        {
+            if(args.length < 2)
+            {
+                return message.channel.send(`Veuillez réessayer en mettant le nom de l'artiste!\n${prefix}lyrics {nom de l'artiste}`);
+            }
+
+            artiste = args.splice(1).join(` `);
+
+            message.channel.send(`Veuillez entrer le titre de la musique maintenant`);
+
+            await message.channel.awaitMessages(messageFilter, { max: 1, time: 20000 }).then(async collected =>
+                {
+                    songName = collected.first().content;
+                    await lyrics(artiste, songName, message, pages);
+                }).catch(err =>
+                    {
+                        return message.channel.send(`Une erreur est survenue! Plus d'infos: ${err}`);
+                    });
+        
+            let lyricEmbed = await message.channel.send(`Pages: ${currentPage + 1} / ${pages.length}`, pages[currentPage]);
+        
+            await lyricEmbed.react(`⬅️`);
+            await lyricEmbed.react(`➡️`);
+
+            let collector = lyricEmbed.createReactionCollector(reactionFilter);
+
+            collector.on(`collect`, (reaction, user) => 
+            {
+                if(reaction.emoji.name == `➡️`)
+                {
+                    if(currentPage < pages.length - 1)
+                    {
+                        currentPage += 1;
+                        lyricEmbed.edit(`Pages: ${currentPage + 1} / ${pages.length}`, pages[currentPage]);
+                        message.reactions.resolve(reaction).users.remove(user);
+                    }
+                }
+                else if(reaction.emoji.name == `⬅️`)
+                {
+                    if(currentPage !== 0)
+                    {
+                        currentPage -= 1;
+                        lyricEmbed.edit(`Pages: ${currentPage + 1} / ${pages.length}`, pages[currentPage]);
+                        message.reactions.resolve(reaction).remove(user);
+                    }
+                }
+            });
+        }
     }
 });
 
@@ -636,6 +735,25 @@ function musicQueue(serverQueue, message)
         {
             return message.channel.send(`Une erreur est survenue! Plus d'infos: ${err}`);
         });
+}
+
+async function lyrics(artiste, songName, message, pages)
+{
+    let fullLyrics = await lyricsFinder(artiste, songName) || `Pas trouvé!`;
+    for(let i = 0; i < fullLyrics.length; i += 2048)
+    {
+        let lyric = fullLyrics.substring(i, Math.min(fullLyrics.length, i + 2048));
+        let embed = new discord.MessageEmbed()
+        .setTitle(`**LYRICS**`)
+        .setAuthor(message.member.displayName, message.member.user.displayAvatarURL({ format: `png`, dynamic: true }))
+        .setColor(`#FF2E00`)
+        .setThumbnail(`https://static-cdn.jtvnw.net/jtv_user_pictures/a3b4762e-93d4-4678-8328-4c050bbc8d4e-profile_image-150x150.png`)
+        .setDescription(lyric)
+        .setFooter(`Développé par Niroshy#0426 et Vakarian#3947`)
+        .setTimestamp();
+
+        pages.push(embed);
+    }
 }
 
 
