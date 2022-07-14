@@ -859,4 +859,4 @@ async function savePlay(message, loopMusic)
     });
 }
 
-client.login(`OTU3NzI0NTE2NzM2NDUwNjcx.YkC8dg.WVYplxpK0QficXILUthkwoNn6_Q`);
+client.login(process.env.TOKEN);
