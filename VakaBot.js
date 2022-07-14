@@ -76,7 +76,7 @@ client.on(`message`, async message =>
         streamAnnouncement = true;
     }
 
-    if((message.mentions.users.get(`957724516736450671`)) || (message.content.startsWith(`${prefix}aide`)))
+    if((message.mentions.users.get(`957724516736450671`)) || (message.content.startsWith(`${prefix}help`)))
     {
         let embed = new discord.MessageEmbed()
         .setTitle(`**AIDE**`)
@@ -396,6 +396,26 @@ client.on(`message`, async message =>
             });
         }
     }
+
+    if(message.content.startsWith(`${prefix}save-music`))
+    {
+        let args = message.content.split(` `);
+
+        saveMusic(serverQueue, message, args);
+    }
+
+    if(message.content.startsWith(`${prefix}save-play`))
+    {
+        let loopMusic = false;
+        let args = message.content.split(` `);
+
+        if((args[1]) && (args[1].startsWith(`musique`)))
+        {
+            loopMusic = true;
+        }
+
+        savePlay(message, loopMusic);
+    }
 });
 
 client.on(`messageReactionAdd`, (reaction, member) =>
@@ -510,7 +530,7 @@ async function execute(message, serverQueue, args)
         {
             let connection = await vc.join();
             queueConstructor.connection = connection;
-            playMusic(message.guild, queueConstructor.songs[0], video, message);
+            playMusic(message.guild, queueConstructor.songs[0], message);
         }
         catch(err)
         {
@@ -540,7 +560,7 @@ async function execute(message, serverQueue, args)
     }
 }
 
-function playMusic(guild, song, video, message)
+function playMusic(guild, song, message)
 {
     let serverQueue = queue.get(guild.id);
     if(!song)
@@ -556,7 +576,7 @@ function playMusic(guild, song, video, message)
     {
         if(serverQueue.loopone)
         {
-            return playMusic(guild, serverQueue.songs[0], video, message);
+            return playMusic(guild, serverQueue.songs[0], message);
         }
         else if(serverQueue.loopall)
         {
@@ -568,7 +588,7 @@ function playMusic(guild, song, video, message)
             serverQueue.songs.shift();
         }
 
-        playMusic(guild, serverQueue.songs[0], video, message);
+        playMusic(guild, serverQueue.songs[0], message);
     });
 
     let embed = new discord.MessageEmbed()
@@ -650,6 +670,8 @@ function resume(serverQueue, message)
     {
         return message.channel.send(`La musique est déjà en cours!`);
     }
+
+    console.log(serverQueue.connection.dispatcher);
 
     serverQueue.connection.dispatcher.resume();
     message.channel.send(`La musique a repris!`);
@@ -756,5 +778,85 @@ async function lyrics(artiste, songName, message, pages)
     }
 }
 
+async function saveMusic(serverQueue, message, args)
+{
+    if(args.length < 2)
+    {
+        if(!serverQueue)
+        {
+            return message.channel.send(`Veuillez entrer le nom de l'artiste ainsi que le titre de la musique afin de la sauvegarder`);
+        }
+        else
+        {
+            BDD[`savedMusic`][message.member.id] = serverQueue.songs[0];
+            saveBDD();
 
-client.login(process.env.TOKEN);
+            let embed = new discord.MessageEmbed()
+            .setTitle(`**MUSIQUE SAUVEGARDÉE**`)
+            .setAuthor(message.member.displayName, message.member.user.displayAvatarURL({ format: `png`, dynamic: true }))
+            .setColor(`#46E237`)
+            .setThumbnail(`https://cdn.discordapp.com/attachments/830567944948809748/958676990771204106/7.png`)
+            .setImage(serverQueue.songs[0].image)
+            .addField(`Auteur`, serverQueue.songs[0].author)
+            .addField(`Titre`, serverQueue.songs[0].title)
+            .addField(`Vues`, serverQueue.songs[0].views, true)
+            .addField(`Durée`, serverQueue.songs[0].duration, true)
+            .setFooter(`Développé par Niroshy#0426 et Vakarian#3947`)
+            .setTimestamp();
+    
+            message.channel.send(embed);
+        }
+    }
+    else
+    {
+        let argsMusic = args.splice(1).join(` `);
+        let res = await ytsr(argsMusic);
+        let video = res.items.filter(i => i.type == `video`)[0];
+
+        BDD[`savedMusic`][message.member.id] = video;
+        saveBDD();
+
+        let embed = new discord.MessageEmbed()
+        .setTitle(`**MUSIQUE SAUVEGARDÉE**`)
+        .setAuthor(message.member.displayName, message.member.user.displayAvatarURL({ format: `png`, dynamic: true }))
+        .setColor(`#7400FF`)
+        .setThumbnail(`https://cdn.discordapp.com/attachments/830567944948809748/958676990771204106/7.png`)
+        .setImage(video.bestThumbnail.url)
+        .addField(`Auteur`, video.author.name)
+        .addField(`Titre`, video.title)
+        .addField(`Vues`, video.views.toLocaleString(), true)
+        .addField(`Durée`, video.duration, true)
+        .setFooter(`Développé par Niroshy#0426 et Vakarian#3947`)
+        .setTimestamp();
+
+        message.channel.send(embed);
+    }
+}
+
+async function savePlay(message, loopMusic)
+{
+    let vc = message.member.voice.channel;
+
+    if(!vc)
+    {
+        return message.channel.send(`Vous n'êtes pas dans un salon vocal!`);
+    }
+
+    let connection = await vc.join();
+    let dispatcher = connection.play(ytdl(BDD[`savedMusic`][message.member.id].url, { quality: `highestaudio`, highWaterMark: 1 << 25 }));
+
+    dispatcher.on(`finish`, () =>
+    {
+        if(loopMusic)
+        {
+            savePlay(message, connection, loopMusic);
+        }
+        else
+        {
+            vc.leave();
+            dispatcher.destroy();
+        }
+    });
+}
+
+client.login(`OTU3NzI0NTE2NzM2NDUwNjcx.YkC8dg.WVYplxpK0QficXILUthkwoNn6_Q`);

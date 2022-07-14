@@ -21,5 +21,59 @@
     "stream": {
         "data": [],
         "pagination": {}
+    },
+    "savedMusic": {
+        "284374660764925952": {
+            "type": "video",
+            "title": "Xaia, Rain Man & Oly - Something In The Air",
+            "id": "q7nUOayRGn8",
+            "url": "https://www.youtube.com/watch?v=q7nUOayRGn8",
+            "bestThumbnail": {
+                "url": "https://i.ytimg.com/vi/q7nUOayRGn8/hq720.jpg?sqp=-oaymwEXCNAFEJQDSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLAOkaCogDJQC0_Yez8GOHHhE_0f6w",
+                "width": 720,
+                "height": 404
+            },
+            "thumbnails": [
+                {
+                    "url": "https://i.ytimg.com/vi/q7nUOayRGn8/hq720.jpg?sqp=-oaymwEXCNAFEJQDSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLAOkaCogDJQC0_Yez8GOHHhE_0f6w",
+                    "width": 720,
+                    "height": 404
+                },
+                {
+                    "url": "https://i.ytimg.com/vi/q7nUOayRGn8/hq720.jpg?sqp=-oaymwEjCOgCEMoBSFryq4qpAxUIARUAAAAAGAElAADIQj0AgKJDeAE=&rs=AOn4CLAEsgfR7806uaKOzUL7beFGGCO02Q",
+                    "width": 360,
+                    "height": 202
+                }
+            ],
+            "isUpcoming": false,
+            "upcoming": null,
+            "isLive": false,
+            "badges": [],
+            "author": {
+                "name": "Trap Nation",
+                "channelID": "UCa10nxShhzNrCE1o2ZOPztg",
+                "url": "https://www.youtube.com/c/TrapNation",
+                "bestAvatar": {
+                    "url": "https://yt3.ggpht.com/ZoViy6jSW8lGsT7Fgz7PsxsWznVseOVjGNkqh9U34cJ-7eXAGs_f2s0yCWwgxsxZT6d7icafVr8=s68-c-k-c0x00ffffff-no-rj",
+                    "width": 68,
+                    "height": 68
+                },
+                "avatars": [
+                    {
+                        "url": "https://yt3.ggpht.com/ZoViy6jSW8lGsT7Fgz7PsxsWznVseOVjGNkqh9U34cJ-7eXAGs_f2s0yCWwgxsxZT6d7icafVr8=s68-c-k-c0x00ffffff-no-rj",
+                        "width": 68,
+                        "height": 68
+                    }
+                ],
+                "ownerBadges": [
+                    "Verified"
+                ],
+                "verified": true
+            },
+            "description": null,
+            "views": 846551,
+            "duration": "2:43",
+            "uploadedAt": "2 years ago"
+        }
     }
 }
