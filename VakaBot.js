@@ -1200,4 +1200,4 @@ function volume(serverQueue, message, args)
     message.channel.send(`Le volume de la musique a bien été mis à ${args[1]}`);
 }
 
-client.login(`OTU3NzI0NTE2NzM2NDUwNjcx.GoVCgj.H3aIYpReKJkD_nGJ4HuUNOh57sTNWwvUGc8lSc`);
+client.login(process.env.TOKEN);
