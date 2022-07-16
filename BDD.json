@@ -1,25 +1,56 @@
 {
-    "giveawayID": "996417252943462410",
-    "giveawayMember": [
-        "284374660764925952"
-    ],
+    "giveawayID": "",
+    "giveawayMember": [],
+    "newVideoVakaInfo": {
+        "channelName": "Niroshy",
+        "title": "12 13 EUW1 5968165331 03",
+        "publishDate": "2022-07-16 01:23:14",
+        "url": "https://www.youtube.com/watch?v=fSu0r1wMv94",
+        "id": "fSu0r1wMv94"
+    },
     "commandsDescriptions": {
         "twitch": "Permet d'avoir la chaîne twitch de Vakarian et de savoir si il stream",
         "youtube": "Permet d'avoir la chaîne youtube de Vakarian",
         "instagram": "Permet d'avoir l'instagram de Vakarian",
         "boutique": "Permet d'avoir le site de la boutique officielle de Vakarian",
+        "settings": "Permet de configurer le bot\n{prefix}settings {notif-channel / prefix}",
         "giveaway": "Permet de lancer un giveaway\n{prefix}giveaway {temps (en minutes)} {nombre de gagnants} {descritption}",
+        "ID": "Permet d'avoir le pseudo de Vakarian",
+        "shutdown": "Permet d'éteindre le bot",
         "play": "Permet de jouer une musique\n{prefix}play {titre & artiste || lien youtube}",
         "stop": "Permet de déconnecter le bot du channel vocal",
         "skip": "Permet de passer à la musique suivante",
-        "pause": "Permet de mettre en pause une musique",
-        "resume": "Permet de reprendre une musique en pause",
         "loop": "Permet de répéter une musique ou toutes les musiques dans la file d'attente",
         "queue": "Permet d'afficher la file d'attente des musiques",
-        "lyrics": "Permet d'avoir les paroles d'une musique"
+        "lyrics": "Permet d'avoir les paroles d'une musique",
+        "save-music": "Permet de sauvegarder une musique",
+        "save-play": "Permet de jouer la musique sauvegardée [loop]",
+        "ban": "Permet de bannir un membre",
+        "kick": "Permet d'expulser un membre",
+        "mute": "Permet de rendre muet un membre",
+        "unmute": "Permet de démute un membre"
     },
     "stream": {
-        "data": [],
+        "data": [
+            {
+                "id": "45762221196",
+                "user_id": "137347549",
+                "user_login": "locklear",
+                "user_name": "Locklear",
+                "game_id": "491870",
+                "game_name": "Astroneer",
+                "type": "live",
+                "title": "⚡ BOOMER GAMER VIEUX EXTREMEMENT AIGRI⚡🤩 !GYMSHARK",
+                "viewer_count": 5364,
+                "started_at": "2022-07-15T19:26:13Z",
+                "language": "fr",
+                "thumbnail_url": "https://static-cdn.jtvnw.net/previews-ttv/live_user_locklear-{width}x{height}.jpg",
+                "tag_ids": [
+                    "6f655045-9989-4ef7-8f85-1edcec42d648"
+                ],
+                "is_mature": false
+            }
+        ],
         "pagination": {}
     },
     "savedMusic": {
@@ -75,5 +106,38 @@
             "duration": "2:43",
             "uploadedAt": "2 years ago"
         }
+    },
+    "VakaBot test": {
+        "channelNotif": {
+            "type": "text",
+            "deleted": false,
+            "id": "958103235825123431",
+            "name": "general",
+            "rawPosition": 0,
+            "parentID": "958103235825123429",
+            "permissionOverwrites": [],
+            "topic": null,
+            "lastMessageID": "997662879287357451",
+            "rateLimitPerUser": 0,
+            "lastPinTimestamp": null,
+            "guild": "958103235825123428",
+            "messages": [
+                "997662488915087390",
+                "997662494803906570",
+                "997662590949920778",
+                "997662592979972178",
+                "997662623803916369",
+                "997662625666179092",
+                "997662728044957797",
+                "997662730595078234",
+                "997662800275058741",
+                "997662802128941087",
+                "997662878930829332",
+                "997662879287357451"
+            ],
+            "nsfw": false,
+            "createdTimestamp": 1648500012118
+        },
+        "prefix": "!"
     }
 }

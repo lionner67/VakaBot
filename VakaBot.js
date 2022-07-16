@@ -12,54 +12,87 @@ const notifier = new ytNotifier({
     checkInterval: 30,
 });
 const BDD = require(`./BDD.json`);
-const prefix = `!`;
 const twitch = new twitchAPI({
     client_secret: `dkuey0t6mqwnrfa7zje0hj4erg5byn`,
     client_id: `dligvbv3oosiq1fpcapfbrmf3op9ih`,
 });
 
+let prefix = `!`;
 let isGiveawayRunning = false;
 let streamAnnouncement = false;
+let playingSavedMusic = false;
+let loopMusic = false;
+let newVideoVaka = false;
 
 client.on(`ready`, () =>
 {
     console.log(`Bot ready!`);
     client.user.setStatus(`online`);
     client.user.setActivity(`Vakarian!`, {type: `WATCHING`, url: `https://www.twitch.tv/tdw_vakarian`});
+    BDD[`giveawayID`] = ``;
+    saveBDD();
+    BDD[`giveawayMember`] = [];
+    saveBDD();
 });
 
 
 notifier.on(`video`, video =>
 {
-    let channelName = video.channelName;
-    let title = video.title;
-    let url = video.url;
-    let embed = new discord.MessageEmbed()
-    .setTitle(`**YOUTUBE NOTIF**`)
-    .setAuthor(channelName)
-    .setColor(`#FFE000`)
-    .setThumbnail(`https://cdn.discordapp.com/attachments/830567944948809748/958676989307387924/3.png`)
-    .setDescription(`Vakarian a publié une nouvelle vidéo!`)
-    .addField(`Titre:`, title)
-    .addField(`Lien:`, url)
-    .setFooter(`Développé par Niroshy#0426 et Vakarian#3947`)
-    .setTimestamp();
+    BDD[`newVideoVakaInfo`] = video;
+    saveBDD();
 
-    client.channels.cache.get(`958103235825123431`).send(`@everyone`);
-    client.channels.cache.get(`958103235825123431`).send(embed);
+    newVideoVaka = true;
 });
 
 
 client.on(`message`, async message =>
 {
-    const serverQueue = queue.get(message.guild.id);
-
     if(message.author.bot)
     {
         return;
     }
 
-    let streams = await twitch.getStreams({ channel: `TDW_Vakarian` });
+    if(message.channel.type == `dm`)
+    {
+        return;
+    }
+
+    if(newVideoVaka)
+    {
+        let channelName = BDD[`newVideoVakaInfo`].channelName;
+        let title = BDD[`newVideoVakaInfo`].title;
+        let url = BDD[`newVideoVakaInfo`].url;
+        let embed = new discord.MessageEmbed()
+        .setTitle(`**YOUTUBE NOTIF**`)
+        .setAuthor(channelName)
+        .setColor(`#FFE000`)
+        .setThumbnail(`https://cdn.discordapp.com/attachments/830567944948809748/958676989307387924/3.png`)
+        .setDescription(`Vakarian a publié une nouvelle vidéo!`)
+        .addField(`Titre`, title)
+        .addField(`Lien`, url)
+        .setFooter(`Développé par Niroshy#0426 et Vakarian#3947`)
+        .setTimestamp();
+    
+        let channel = BDD[message.guild.name][`channelNotif`];
+        if(channel)
+        {
+            client.channels.cache.get(channel.id).send(`@everyone`);
+            client.channels.cache.get(channel.id).send(embed);
+            newVideoVaka = false;
+        }
+        else
+        {
+            message.channel.send(`@everyone`);
+            message.channel.send(embed);
+            newVideoVaka = false;
+        }
+    }
+
+    prefix = BDD[message.guild.name][`prefix`];
+
+    const serverQueue = queue.get(message.guild.id);
+
+    let streams = await twitch.getStreams({ channel: `Locklear` });
     BDD[`stream`] = streams;
     saveBDD();
     let stream = BDD[`stream`][`data`][0];
@@ -71,9 +104,33 @@ client.on(`message`, async message =>
 
     if((!streamAnnouncement) && (stream) && (stream.type == `live`))
     {
-        client.channels.cache.get(`958103235825123431`).send(`Oui`);
+        let embed = new discord.MessageEmbed()
+        .setTitle(`**TWITCH NOTIF**`)
+        .setAuthor(stream.user_name)
+        .setColor(`#FF3E00`)
+        .setThumbnail(`https://cdn.discordapp.com/attachments/830567944948809748/958676989307387924/3.png`)
+        .setDescription(`Vakarian a publié une nouvelle vidéo!`)
+        .addField(`Titre`, stream.title, false)
+        .addField(`Jeu`, stream.game_name, false)
+        .addField(`Lien`, `https://www.twitch.tv/tdw_vakarian`)
+        .setFooter(`Développé par Niroshy#0426 et Vakarian#3947`)
+        .setTimestamp();
+
+        let channel = BDD[message.guild.name][`channelNotif`];
+        if(channel)
+        {
+            client.channels.cache.get(channel.id).send(`@everyone`);
+            client.channels.cache.get(channel.id).send(embed);
+            streamAnnouncement = true;
+        }
+        else
+        {
+            message.channel.send(`@everyone`);
+            message.channel.send(embed);
+            streamAnnouncement = true;
+        }
+        
         client.user.setActivity(`Vakarian est en stream! Viens le rejoindre!`, { type: `STREAMING`, url: `https://www.twitch.tv/tdw_vakarian` });
-        streamAnnouncement = true;
     }
 
     if((message.mentions.users.get(`957724516736450671`)) || (message.content.startsWith(`${prefix}help`)))
@@ -85,24 +142,91 @@ client.on(`message`, async message =>
         .setThumbnail(client.user.displayAvatarURL({ format: `png`, dynamic: true }))
         .setDescription(`Je suis VakaBot! Le bot officiel de Vakarian! Mon prefix est ${prefix}`)
         .addField(`Réseaux & autre`, `Avoir les différents réseaux sociaux de Vakarian`)
-        .addField(`${prefix}twitch:\n`, BDD[`commandsDescriptions`][`twitch`], true)
-        .addField(`${prefix}youtube\n`, BDD[`commandsDescriptions`][`youtube`], true)
+        .addField(`${prefix}twitch`, BDD[`commandsDescriptions`][`twitch`], true)
+        .addField(`${prefix}youtube`, BDD[`commandsDescriptions`][`youtube`], true)
         .addField(`${prefix}instagram`, BDD[`commandsDescriptions`][`instagram`], true)
         .addField(`${prefix}boutique`, BDD[`commandsDescriptions`][`boutique`], true)
+        .addField(`${prefix}settings`, BDD[`commandsDescriptions`][`settings`], true)
         .addField(`${prefix}giveaway`, BDD[`commandsDescriptions`][`giveaway`], true)
+        .addField(`${prefix}ID`, BDD[`commandsDescriptions`][`ID`], true)
+        .addField(`${prefix}shutdown`, BDD[`commandsDescriptions`][`shutdown`], true)
         .addField(`Musique`, `Jouer de la musique dans ton channel vocal`)
         .addField(`${prefix}play`, BDD[`commandsDescriptions`][`play`], true)
         .addField(`${prefix}stop`, BDD[`commandsDescriptions`][`stop`], true)
         .addField(`${prefix}skip`, BDD[`commandsDescriptions`][`skip`], true)
-        .addField(`${prefix}pause`, BDD[`commandsDescriptions`][`pause`], true)
-        .addField(`${prefix}resume`, BDD[`commandsDescriptions`][`resume`], true)
         .addField(`${prefix}loop`, BDD[`commandsDescriptions`][`loop`], true)
         .addField(`${prefix}queue`, BDD[`commandsDescriptions`][`queue`], true)
+        .addField(`${prefix}volume`, BDD[`commandsDescriptions`][`volume`], true)
         .addField(`${prefix}lyrics`, BDD[`commandsDescriptions`][`lyrics`], true)
+        .addField(`${prefix}save-music`, BDD[`commandsDescriptions`][`save-music`], true)
+        .addField(`${prefix}save-play`, BDD[`commandsDescriptions`][`save-play`], true)
+        .addField(`Modération`, `Commandes de modération`)
+        .addField(`${prefix}ban`, BDD[`commandsDescriptions`][`ban`], true)
+        .addField(`${prefix}kick`, BDD[`commandsDescriptions`][`kick`], true)
+        .addField(`${prefix}mute`, BDD[`commandsDescriptions`][`mute`], true)
+        .addField(`${prefix}unmute`, BDD[`commandsDescriptions`][`unmute`], true)
         .setFooter(`Développé par Niroshy#0426 et Vakarian#3947`)
         .setTimestamp();
 
         message.channel.send(embed);
+    }
+
+    if(message.content.startsWith(`${prefix}settings`))
+    {
+        if(!BDD[message.guild.name])
+        {
+            BDD[message.guild.name] = {};
+            saveBDD();
+        }
+
+        if(!message.member.hasPermission(`MANAGE_GUILD`))
+        {
+            return message.channel.send(`Vous n'avez pas la permission de faire cette commande!`);
+        }
+
+        let args = message.content.split(` `);
+
+        if(!args[1])
+        {
+            return message.channel.send(`Veuillez indiquer qu'est-ce que vous voulez paramétrer! ${prefix}settings notif-channel / prefix`);
+        }
+
+        switch(args[1].toLowerCase())
+        {
+            case `notif-channel`:
+
+                let channel = message.mentions.channels.first();
+
+                if(!channel)
+                {
+                    return message.channel.send(`Veuillez mentionner le channel!`);
+                }
+
+                BDD[message.guild.name][`channelNotif`] = channel;
+                saveBDD();
+
+                message.channel.send(`Le channel ${channel.name} a bien été enregistré!`);
+
+                break;
+
+            case `prefix`:
+
+                if(!args[2])
+                {
+                    return message.channel.send(`Veuillez indiquer le nouveau prefix!`);
+                }
+
+                BDD[message.guild.name][`prefix`] = args[2];
+                saveBDD();
+
+                message.channel.send(`Le nouveau prefix (${args[2]}) a bien été enregistré!`);
+
+                break;
+
+            default:
+                
+                return message.channel.send(`Veuillez indiquer qu'est-ce que vous voulez paramétrer! ${prefix}settings notif-channel / prefix`);
+        }
     }
 
     if(message.content.startsWith(`${prefix}twitch`))
@@ -201,12 +325,18 @@ client.on(`message`, async message =>
         }
 
         let embedGiveaway = new discord.MessageEmbed()
-        .setAuthor(message.member.displayName, message.author.displayAvatarURL({format: `png`, dynamic: true}))
+        .setTitle(`**GIVEWAY**`)
+        .setAuthor(message.member.displayName, message.author.displayAvatarURL({ format: `png`, dynamic: true }))
         .setColor(`#FFEC00`)
         .setThumbnail(`https://cdn.discordapp.com/attachments/830567944948809748/958676990771204106/7.png`)
-        .setDescription(`${descriptionGiveaway}\nGagnants: ${winnerNumber}`)
-        .setFooter(`Temps: ${args[2]}min`)
+        .setDescription(`Un nouveau giveway vient de commencer! Bonne chance!`)
+        .addField(`Gain:`, descriptionGiveaway, false)
+        .addField(`Gagnants:`, winnerNumber, true)
+        .addField(`Temps:`, `${args[1]}min`, true)
+        .setFooter(`Développé par Niroshy#0426 et Vakarian#3947`)
         .setTimestamp();
+
+        message.channel.send(`@everyone`);
         message.channel.send(embedGiveaway).then(message =>
             {
                 message.react(`✅`);
@@ -217,7 +347,9 @@ client.on(`message`, async message =>
                 {
                     return message.channel.send(`Impossible à envoyer le message!\nPlus d'infos: ${err}`);
                 });
+
         message.delete();
+
         setTimeout(function()
         {
             for(var i = 0; i < winnerNumber; i++)
@@ -226,13 +358,19 @@ client.on(`message`, async message =>
                 let winnerBDD = BDD[`giveawayMember`][randomNumber];
                 if(!winnerBDD)
                 {
+                    BDD[`giveawayID`] = ``;
+                    saveBDD();
+                    BDD[`giveawayMember`] = [];
+                    saveBDD();
+
+                    isGiveawayRunning = false;
                     return message.channel.send(`Il n'y a pas de gagnant ou d'autre gagnant!`);
                 }
 
                 let winnerUser = client.users.cache.get(winnerBDD);
                 winnerUser.send(`Bravo ! Tu viens de gagner le giveaway!`).catch(() =>
                 {
-                    return;
+                    console.log(`Une erreur irréparable est survenue!`);
                 });
 
                 let embed = new discord.MessageEmbed()
@@ -240,7 +378,10 @@ client.on(`message`, async message =>
                 .setAuthor(message.member.displayName, message.member.user.displayAvatarURL({ format: `png`, dynamic: true }))
                 .setColor(`#FF1B00`)
                 .setThumbnail(`https://cdn.discordapp.com/attachments/830567944948809748/958676990339198996/6.png`)
-                .setDescription(`Bravo à <@${winnerUser.id}> pour avoir gagné le giveaway!`)
+                .setDescription(`Giveaway fini! GG!`)
+                .addField(`Gain`, descriptionGiveaway, false)
+                .addField(`Gagnant`, winnerUser, true)
+                .addField(`Temps`, `${args[2]}min`, true)
                 .setFooter(`Développé par Niroshy#0426 et Vakarian#3947`)
                 .setTimestamp();
 
@@ -254,11 +395,45 @@ client.on(`message`, async message =>
             BDD[`giveawayMember`] = [];
             saveBDD();
             isGiveawayRunning = false;
+            
         }, timeGiveaway);
+    }
+
+    if(message.content.startsWith(`${prefix}ID`))
+    {
+        let embed = new discord.MessageEmbed()
+        .setTitle(`**ID**`)
+        .setAuthor(message.member.displayName, message.member.user.displayAvatarURL({ format: `png`, dynamic: true }))
+        .setColor(`#FF1B00`)
+        .setThumbnail(`https://cdn.discordapp.com/attachments/830567944948809748/958676988904751115/1.png`)
+        .setDescription(`Voici les ID de jeux de Vakarian`)
+        .addField(`Epic:`, `TDWvakarian`, true)
+        .setFooter(`Développé par Niroshy#0426 et Vakarian#3947`)
+        .setTimestamp();
+
+        message.channel.send(embed);
+    }
+
+    if(message.content.startsWith(`${prefix}shutdown`))
+    {
+        if((message.member.id == `284374660764925952`) || (message.member.id == `527830313921937408`))
+        {
+            message.channel.send(`Arrêt du bot`);
+            client.destroy();
+        }
+        else
+        {
+            return message.channel.send(`Vous ne pouvez pas faire cette commande!`);
+        }
     }
 
     if(message.content.startsWith(`${prefix}play`))
     {
+        if(playingSavedMusic)
+        {
+            return message.channel.send(`Cette fonctionnalité est indisponible pour le moment veuillez réessayer plus tard`);
+        }
+
         let args = message.content.split(` `);
 
         execute(message, serverQueue, args);
@@ -266,22 +441,22 @@ client.on(`message`, async message =>
 
     if(message.content.startsWith(`${prefix}stop`))
     {
+        if(playingSavedMusic)
+        {
+            return message.channel.send(`Cette fonctionnalité est indisponible pour le moment veuillez réessayer plus tard`);
+        }
+
         stop(message, serverQueue);
     }
 
     if(message.content.startsWith(`${prefix}skip`))
     {
+        if(playingSavedMusic)
+        {
+            return message.channel.send(`Cette fonctionnalité est indisponible pour le moment veuillez réessayer plus tard`);
+        }
+
         skip(message, serverQueue);
-    }
-
-    if(message.content.startsWith(`${prefix}pause`))
-    {
-        pause(serverQueue, message);
-    }
-
-    if(message.content.startsWith(`${prefix}resume`))
-    {
-        resume(serverQueue, message);
     }
 
     if(message.content.startsWith(`${prefix}loop`))
@@ -292,12 +467,34 @@ client.on(`message`, async message =>
             return message.channel.send(`Veuillez spécifier quelle répétition vous voulez: ${prefix}loop musique/queue/off`);
         }
 
+        if(playingSavedMusic)
+        {
+            return message.channel.send(`Cette fonctionnalité est indisponible pour le moment veuillez réessayer plus tard`);
+        }
+
         loop(args, serverQueue, message);
     }
 
     if(message.content.startsWith(`${prefix}queue`))
     {
+        if(playingSavedMusic)
+        {
+            return message.channel.send(`Cette fonctionnalité est indisponible pour le moment veuillez réessayer plus tard`);
+        }
+
         musicQueue(serverQueue, message);
+    }
+
+    if(message.content.startsWith(`${prefix}volume`))
+    {
+        if(playingSavedMusic)
+        {
+            return message.channel.send(`Cette fonctionnalité n'est pas disponible pour le moment, réessayez plus tard`);
+        }
+
+        let args = message.content.split(` `);
+
+        volume(serverQueue, message, args);
     }
 
     if(message.content.startsWith(`${prefix}lyrics`))
@@ -406,15 +603,167 @@ client.on(`message`, async message =>
 
     if(message.content.startsWith(`${prefix}save-play`))
     {
-        let loopMusic = false;
-        let args = message.content.split(` `);
-
-        if((args[1]) && (args[1].startsWith(`musique`)))
+        if(serverQueue)
         {
-            loopMusic = true;
+            return message.channel.send(`Cette fonctionnalité n'est pas disponible pour le moment veuillez réessayer plus tard!`);
         }
 
+        let args = message.content.split(` `);
+
+        if((args[1]) && (args[1].startsWith(`loop`)))
+        {
+            if(loopMusic)
+            {
+                loopMusic = false;
+                message.channel.send(`La répétition de la musique a été désactivée!`);
+            }
+            else
+            {
+                loopMusic = true;
+                message.channel.send(`La répétition de la musique a été activée!`);
+            }
+        }
+
+        playingSavedMusic = true;
         savePlay(message, loopMusic);
+    }
+
+    if(message.content.startsWith(`${prefix}ban`))
+    {
+        if(!message.member.hasPermission(`BAN_MEMBERS`))
+        {
+            return message.channel.send(`Vous n'avez pas la permission de faire cette commande!`);
+        }
+
+        let userBan = message.mentions.members.first();
+
+        if(!userBan)
+        {
+            return message.channel.send(`Veuillez mentionner une personne pour pouvoir la bannir`);
+        }
+
+        if(!userBan.bannable)
+        {
+            return message.channel.send(`Impossible de bannir cette personne!`);
+        }
+
+        message.channel.send(`${userBan.displayName} a bien été banni!`);
+        userBan.ban().catch(err =>
+            {
+                return message.channel.send(`Un problème vient d'apparaître! Plus d'infos: ${err}`);
+            });
+    }
+
+    if(message.content.startsWith(`${prefix}kick`))
+    {
+        if(!message.member.hasPermission(`KICK_MEMBERS`))
+        {
+            return message.channel.send(`Vous n'avez pas la permission de faire cette commande!`);
+        }
+
+        let userKick = message.mentions.members.first();
+
+        if(!userKick)
+        {
+            return message.channel.send(`Veuillez mentionner une personne pour pouvoir la kick`);
+        }
+
+        if(!userKick.kickable)
+        {
+            return message.channel.send(`Impossible de kick cette personne!`);
+        }
+
+        message.channel.send(`${userKick.displayName} a bien été kick!`);
+        userKick.kick().catch(err =>
+            {
+                return message.channel.send(`Un problème vient d'apparaître! Plus d'infos: ${err}`);
+            });
+    }
+
+    if(message.content.startsWith(`${prefix}mute`))
+    {
+        if(!message.member.hasPermission(`MUTE_MEMBERS`))
+        {
+            return message.channel.send(`Vous n'avez pas la permission de faire cette commande!`);
+        }
+
+        let userMute = message.mentions.members.first();
+
+        if(!userMute)
+        {
+            return message.channel.send(`Veuillez mentionner une personne pour pouvoir la mute`);
+        }
+
+        let roleMute = message.guild.roles.cache.find(i => i.name == `Muted`);
+
+        if(!roleMute)
+        {
+            let newRoleMute = message.guild.roles.create({
+                data: 
+                {
+                    name: `Muted`,
+                    permissions: [],
+                }
+            }).catch(err =>
+                {
+                    return message.channel.send(`Un problème vient d'apparaître! Plus d'infos: ${err}`);
+                });
+
+            userMute.roles.add(`${(await newRoleMute).id}`).catch(err => 
+                {
+                    return message.channel.send(`Un problème vient d'apparaître! Plus d'infos: ${err}`);
+                });
+
+            message.channel.send(`${userMute.displayName} a bien été mute!`);
+        }
+        else
+        {
+            userMute.roles.add(`${roleMute.id}`).catch(err =>
+                {
+                    return message.channel.send(`Un problème vient d'apparaître! Plus d'infos: ${err}`);
+                });
+            message.channel.send(`${userMute.displayName} a bien été mute!`);
+        }
+    }
+
+    if(message.content.startsWith(`${prefix}unmute`))
+    {
+        if(!message.member.hasPermission(`MUTE_MEMBERS`))
+        {
+            return message.channel.send(`Vous n'avez pas la permission de faire cette commande!`);
+        }
+
+        let userUnmute = message.mentions.members.first();
+
+        if(!userUnmute)
+        {
+            return message.channel.send(`Veuillez mentionner une personne pour pouvoir la démute`);
+        }
+
+        let roleMute = message.guild.roles.cache.find(i => i.name == `Muted`);
+
+        if(!roleMute)
+        {
+            message.guild.roles.create({
+                data: 
+                {
+                    name: `Muted`,
+                    permissions: [],
+                }
+            }).catch(err =>
+                {
+                    return message.channel.send(`Un problème vient d'apparaître! Plus d'infos: ${err}`);
+                });
+        }
+        else
+        {
+            userUnmute.roles.remove(`${roleMute.id}`).catch(err =>
+                {
+                    return message.channel.send(`Un problème vient d'apparaître! Plus d'infos: ${err}`);
+                });
+                
+            message.channel.send(`${userUnmute.displayName} a bien été démute!`);
+        }
     }
 });
 
@@ -429,7 +778,7 @@ client.on(`messageReactionAdd`, (reaction, member) =>
 
         BDD[`giveawayMember`].push(member.id);
         saveBDD();
-        member.send(`Tu participes au giveaway ! Bonne chance !`).catch(() =>
+        member.send(`Tu participes au giveaway! Bonne chance!`).catch(() =>
         {
             return;
         });
@@ -446,32 +795,16 @@ client.on(`messageReactionRemove`, (reaction, member) =>
         }
 
         let getIndex = BDD[`giveawayMember`].indexOf(member.id);
+
         if(getIndex > -1)
         {
             BDD[`giveawayMember`].splice(getIndex, 1);
             saveBDD();
-            member.send(`Tu ne participes plus au giveaway !`);
+            member.send(`Tu ne participes plus au giveaway!`).catch(() =>
+            {
+                return;
+            });
         }
-    }
-});
-
-client.on(`presenceUpdate`, async () =>
-{
-    let streams = await twitch.getStreams({ channel: `TDW_Vakarian` });
-    BDD[`stream`] = streams;
-    saveBDD();
-    let stream = BDD[`stream`][`data`][0];
-    
-    if(!stream)
-    {
-        streamAnnouncement = false;
-    }
-
-    if((!streamAnnouncement) && (stream) && (stream.type == `live`))
-    {
-        client.channels.cache.get(`958103235825123431`).send(`Oui`);
-        client.user.setActivity(`Vakarian est en stream! Viens le rejoindre!`, { type: `STREAMING`, url: `https://www.twitch.tv/tdw_vakarian` });
-        streamAnnouncement = true;
     }
 });
 
@@ -488,6 +821,11 @@ function saveBDD()
 
 async function execute(message, serverQueue, args)
 {
+    if(!args[1])
+    {
+        return message.channel.send(`Veuillez mettre une url ou le titre et l'artiste de la musique!`);
+    }
+
     let vc = message.member.voice.channel;
     if(!vc)
     {
@@ -631,50 +969,6 @@ function skip(message, serverQueue)
     }
 
     serverQueue.connection.dispatcher.end();
-}
-
-function pause(serverQueue, message)
-{
-    if(!serverQueue.connection)
-    {
-        return message.channel.send(`Il n'y a pas de musique en cours!`);
-    }
-
-    if(!message.member.voice.channel)
-    {
-        return message.channel.send(`Veuillez rejoindre un chat vocal!`);
-    }
-
-    if(serverQueue.connection.dispatcher.paused)
-    {
-        return message.channel.send(`La musique est déjà en pause!`);
-    }
-
-    serverQueue.connection.dispatcher.pause();
-    message.channel.send(`La musique a été mis en pause!`);
-}
-
-function resume(serverQueue, message)
-{
-    if(!serverQueue.connection)
-    {
-        return message.channel.send(`Il n'y a pas de musique en cours!`);
-    }
-
-    if(!message.member.voice.channel)
-    {
-        return message.channel.send(`Veuillez rejoindre un chat vocal!`);
-    }
-
-    if(serverQueue.connection.dispatcher.resumed)
-    {
-        return message.channel.send(`La musique est déjà en cours!`);
-    }
-
-    console.log(serverQueue.connection.dispatcher);
-
-    serverQueue.connection.dispatcher.resume();
-    message.channel.send(`La musique a repris!`);
 }
 
 function loop(args, serverQueue, message)
@@ -843,7 +1137,33 @@ async function savePlay(message, loopMusic)
     }
 
     let connection = await vc.join();
-    let dispatcher = connection.play(ytdl(BDD[`savedMusic`][message.member.id].url, { quality: `highestaudio`, highWaterMark: 1 << 25 }));
+    let res = await ytsr(BDD[`savedMusic`][message.member.id].url);
+    let video = res.items.filter(i => i.type == `video`)[0];
+    let songInfo = {
+        author: video.author.name,
+        title: video.title,
+        image: video.bestThumbnail.url,
+        views: video.views.toLocaleString(),
+        duration: video.duration,
+        url: video.url
+    }
+
+    let embed = new discord.MessageEmbed()
+    .setTitle(`**MUSIQUE**`)
+    .setAuthor(message.member.displayName, message.member.user.displayAvatarURL({ format: `png`, dynamic: true }))
+    .setColor(`#00FFC1`)
+    .setThumbnail(`https://cdn.discordapp.com/attachments/830567944948809748/958676989307387924/3.png`)
+    .setImage(songInfo.image)
+    .addField(`Auteur`, songInfo.author)
+    .addField(`Titre`, songInfo.title)
+    .addField(`Vues`, songInfo.views, true)
+    .addField(`Durée`, songInfo.duration, true)
+    .setFooter(`Développé par Niroshy#0426 et Vakarian#3947`)
+    .setTimestamp();
+
+    message.channel.send(embed);
+
+    let dispatcher = connection.play(ytdl(songInfo.url, { quality: `highestaudio`, highWaterMark: 1 << 25 }));
 
     dispatcher.on(`finish`, () =>
     {
@@ -853,10 +1173,31 @@ async function savePlay(message, loopMusic)
         }
         else
         {
+            playingSavedMusic = false;
             vc.leave();
             dispatcher.destroy();
         }
     });
 }
 
-client.login(process.env.TOKEN);
+function volume(serverQueue, message, args)
+{
+    if(!serverQueue)
+    {
+        return message.channel.send(`Il n'y a aucune musique en cours!`);
+    }
+
+    if((!args[1]) || (isNaN(args[1])))
+    {
+        return message.channel.send(`Veuillez mettre un nombre!`);
+    }
+    else if((args[1] < 0) || (args[1] > 2))
+    {
+        return message.channel.send(`Veuillez mettre un nombre entre 0 et 2 (1 étant par défaut)`);
+    }
+
+    serverQueue.connection.dispatcher.setVolume(args[1]);
+    message.channel.send(`Le volume de la musique a bien été mis à ${args[1]}`);
+}
+
+client.login(`OTU3NzI0NTE2NzM2NDUwNjcx.GoVCgj.H3aIYpReKJkD_nGJ4HuUNOh57sTNWwvUGc8lSc`);
