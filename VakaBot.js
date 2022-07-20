@@ -195,7 +195,7 @@ client.on(`message`, async message =>
         {
             case `notif-channel`:
 
-                if(args[3].startsWith(`youtube`))
+                if(args[2].startsWith(`youtube`))
                 {
                     let channel = message.mentions.channels.first();
 
@@ -209,7 +209,7 @@ client.on(`message`, async message =>
     
                     message.channel.send(`Le channel ${channel.name} a bien été enregistré!`);                    
                 }
-                else if(args[3].startsWith(`twitch`))
+                else if(args[2].startsWith(`twitch`))
                 {
                     let channel = message.mentions.channels.first();
 
