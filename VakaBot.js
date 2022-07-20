@@ -47,6 +47,12 @@ notifier.on(`video`, video =>
 
 client.on(`message`, async message =>
 {
+    if(!BDD[message.guild.id])
+    {
+        BDD[message.guild.id] = {};
+        saveBDD();
+    }
+
     if(message.author.bot)
     {
         return;
@@ -88,9 +94,11 @@ client.on(`message`, async message =>
         }
     }
 
-    prefix = BDD[message.guild.name][`prefix`];
-
-    if(!prefix)
+    if(BDD[message.guild.id][`prefix`])
+    {
+        prefix = BDD[message.guild.id][`prefix`];
+    }
+    else
     {
         prefix = `!`;
     }
