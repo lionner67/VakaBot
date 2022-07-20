@@ -73,7 +73,7 @@ client.on(`message`, async message =>
         .setFooter(`Développé par Niroshy#0426 et Vakarian#3947`)
         .setTimestamp();
     
-        let channel = BDD[message.guild.name][`channelNotif`];
+        let channel = BDD[message.guild.name][`channelNotifYT`];
         if(channel)
         {
             client.channels.cache.get(channel.id).send(`@everyone`);
@@ -92,7 +92,7 @@ client.on(`message`, async message =>
 
     const serverQueue = queue.get(message.guild.id);
 
-    let streams = await twitch.getStreams({ channel: `Locklear` });
+    let streams = await twitch.getStreams({ channel: `TDW_Vakarian` });
     BDD[`stream`] = streams;
     saveBDD();
     let stream = BDD[`stream`][`data`][0];
@@ -116,7 +116,7 @@ client.on(`message`, async message =>
         .setFooter(`Développé par Niroshy#0426 et Vakarian#3947`)
         .setTimestamp();
 
-        let channel = BDD[message.guild.name][`channelNotif`];
+        let channel = BDD[message.guild.name][`channelNotifTTV`];
         if(channel)
         {
             client.channels.cache.get(channel.id).send(`@everyone`);
@@ -195,17 +195,38 @@ client.on(`message`, async message =>
         {
             case `notif-channel`:
 
-                let channel = message.mentions.channels.first();
-
-                if(!channel)
+                if(args[3].startsWith(`youtube`))
                 {
-                    return message.channel.send(`Veuillez mentionner le channel!`);
+                    let channel = message.mentions.channels.first();
+
+                    if(!channel)
+                    {
+                        return message.channel.send(`Veuillez mentionner le channel!`);
+                    }
+    
+                    BDD[message.guild.name][`channelNotifYT`] = channel;
+                    saveBDD();
+    
+                    message.channel.send(`Le channel ${channel.name} a bien été enregistré!`);                    
                 }
+                else if(args[3].startsWith(`twitch`))
+                {
+                    let channel = message.mentions.channels.first();
 
-                BDD[message.guild.name][`channelNotif`] = channel;
-                saveBDD();
-
-                message.channel.send(`Le channel ${channel.name} a bien été enregistré!`);
+                    if(!channel)
+                    {
+                        return message.channel.send(`Veuillez mentionner le channel!`);
+                    }
+    
+                    BDD[message.guild.name][`channelNotifTTV`] = channel;
+                    saveBDD();
+    
+                    message.channel.send(`Le channel ${channel.name} a bien été enregistré!`);    
+                }
+                else
+                {
+                    return message.channel.send(`Veuillez spécifier la plateforme (youtube / twitch)`);
+                }
 
                 break;
 
