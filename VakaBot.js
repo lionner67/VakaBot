@@ -90,6 +90,11 @@ client.on(`message`, async message =>
 
     prefix = BDD[message.guild.name][`prefix`];
 
+    if(!prefix)
+    {
+        prefix = `!`;
+    }
+
     const serverQueue = queue.get(message.guild.id);
 
     let streams = await twitch.getStreams({ channel: `TDW_Vakarian` });
