@@ -13,7 +13,7 @@ const notifier = new ytNotifier({
 });
 const BDD = require(`./BDD.json`);
 const twitch = new twitchAPI({
-    client_secret: `dkuey0t6mqwnrfa7zje0hj4erg5byn`,
+    client_secret: `thz6fnnufxi8evlbduem2ujtptha9m`,
     client_id: `dligvbv3oosiq1fpcapfbrmf3op9ih`,
 });
 
