@@ -122,10 +122,11 @@ client.on(`message`, async message =>
         .setAuthor(stream.user_name)
         .setColor(`#FF3E00`)
         .setThumbnail(`https://cdn.discordapp.com/attachments/830567944948809748/958676989307387924/3.png`)
-        .setDescription(`Vakarian a publié une nouvelle vidéo!`)
-        .addField(`Titre`, stream.title, false)
-        .addField(`Jeu`, stream.game_name, false)
-        .addField(`Lien`, `https://www.twitch.tv/tdw_vakarian`)
+        .setDescription(`Vakarian a lancé un live!`)
+        .addField(`Titre`, stream.title, true)
+        .addField(`Jeu`, stream.game_name, true)
+        .addField(`Lien`, `https://www.twitch.tv/tdw_vakarian`, true)
+        .setThumbnail(stream.thumbnail_url)
         .setFooter(`Développé par Niroshy#0426 et Vakarian#3947`)
         .setTimestamp();
 
