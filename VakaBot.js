@@ -139,9 +139,7 @@ client.on(`message`, async message =>
         }
         else
         {
-            message.channel.send(`@everyone`);
-            message.channel.send(embed);
-            streamAnnouncement = true;
+            return;
         }
         
         client.user.setActivity(`Vakarian est en stream! Viens le rejoindre!`, { type: `STREAMING`, url: `https://www.twitch.tv/tdw_vakarian` });
