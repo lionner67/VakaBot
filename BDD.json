@@ -33,18 +33,18 @@
     "stream": {
         "data": [
             {
-                "id": "45762221196",
-                "user_id": "137347549",
-                "user_login": "locklear",
-                "user_name": "Locklear",
-                "game_id": "491870",
-                "game_name": "Astroneer",
+                "id": "45966966620",
+                "user_id": "276668404",
+                "user_login": "tdw_vakarian",
+                "user_name": "TDW_Vakarian",
+                "game_id": "33214",
+                "game_name": "Fortnite",
                 "type": "live",
-                "title": "⚡ BOOMER GAMER VIEUX EXTREMEMENT AIGRI⚡🤩 !GYMSHARK",
-                "viewer_count": 5364,
-                "started_at": "2022-07-15T19:26:13Z",
+                "title": "[GameViewers] On joue ensemble! Road to 1,5K follows ❤️ !discord !insta !boutique !jouer !liste",
+                "viewer_count": 10,
+                "started_at": "2022-08-24T10:58:54Z",
                 "language": "fr",
-                "thumbnail_url": "https://static-cdn.jtvnw.net/previews-ttv/live_user_locklear-{width}x{height}.jpg",
+                "thumbnail_url": "https://static-cdn.jtvnw.net/previews-ttv/live_user_tdw_vakarian-{width}x{height}.jpg",
                 "tag_ids": [
                     "6f655045-9989-4ef7-8f85-1edcec42d648"
                 ],
@@ -109,5 +109,53 @@
     },
     "VakaBot test": {
         "prefix": "!"
+    },
+    "958103235825123428": {},
+    "977049019777970186": {},
+    "Vakarian™": {
+        "channelNotifYT": {
+            "type": "text",
+            "deleted": false,
+            "id": "999456731098779730",
+            "name": "🎥・𝓐nnonce-𝓥idéo",
+            "rawPosition": 4,
+            "parentID": "977049019777970187",
+            "permissionOverwrites": [
+                "977052605362610227",
+                "977049019777970186",
+                "977052356082536468",
+                "977051269128663060"
+            ],
+            "topic": null,
+            "nsfw": false,
+            "lastMessageID": null,
+            "rateLimitPerUser": 0,
+            "lastPinTimestamp": null,
+            "guild": "977049019777970186",
+            "messages": [],
+            "createdTimestamp": 1658359453702
+        },
+        "channelNotifTTV": {
+            "type": "text",
+            "deleted": false,
+            "id": "977053781336395796",
+            "name": "🔔・𝓐nnonce-𝓛ive",
+            "rawPosition": 5,
+            "parentID": "977049019777970187",
+            "permissionOverwrites": [
+                "977052356082536468",
+                "977052605362610227",
+                "977051269128663060",
+                "977049019777970186"
+            ],
+            "topic": null,
+            "nsfw": false,
+            "lastMessageID": "998618031683014787",
+            "rateLimitPerUser": 0,
+            "lastPinTimestamp": null,
+            "guild": "977049019777970186",
+            "messages": [],
+            "createdTimestamp": 1653018174252
+        }
     }
 }

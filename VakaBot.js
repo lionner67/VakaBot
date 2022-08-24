@@ -119,14 +119,14 @@ client.on(`message`, async message =>
     {
         let embed = new discord.MessageEmbed()
         .setTitle(`**TWITCH NOTIF**`)
-        .setAuthor(stream.user_name)
+        .setAuthor(stream.user_name, `https://cdn.discordapp.com/avatars/527830313921937408/b81c530efe1bf985ebdc230b04d440ca.webp`)
         .setColor(`#FF3E00`)
         .setThumbnail(`https://cdn.discordapp.com/attachments/830567944948809748/958676989307387924/3.png`)
-        .setDescription(`Vakarian a lancé un live!`)
-        .addField(`Titre`, stream.title, true)
-        .addField(`Jeu`, stream.game_name, true)
-        .addField(`Lien`, `https://www.twitch.tv/tdw_vakarian`, true)
-        .setThumbnail(stream.thumbnail_url)
+        .setImage(`https://cdn.discordapp.com/avatars/527830313921937408/b81c530efe1bf985ebdc230b04d440ca.webp`)
+        .setDescription(`Vakarian a lancé un live! Venez le rejoindre!`)
+        .addField(`Titre`, stream.title, false)
+        .addField(`Jeu`, stream.game_name, false)
+        .addField(`Lien`, `https://www.twitch.tv/tdw_vakarian`, false)
         .setFooter(`Développé par Niroshy#0426 et Vakarian#3947`)
         .setTimestamp();
 
